@@ -10,7 +10,8 @@ import styles from "./sidebar.module.scss";
 import classNames from "classnames/bind";
 import { useContext } from "react";
 import { sidebarContext } from "../../../../App";
-
+import { Link } from "react-router-dom";
+import { publicRoutes } from "../../../../routes";
 const cx = classNames.bind(styles);
 function Sidebar() {
   const { sidebarIndexClicked, setSidebarIndexClicked } =
@@ -26,16 +27,22 @@ function Sidebar() {
     <div className={cx("wrapper")}>
       <CreateFrom />
       <div className={cx("sidebar-item-wrapper")}>
-        {sidebarItems.map((item, index) => {
+        {publicRoutes.map((route, index) => {
           return (
-            <SidebarItem
+            <Link
+              to={route.path}
               key={index}
-              index={index}
-              name={item.name}
-              icon={item.icon}
-              onClick={() => setSidebarIndexClicked(index)}
-              active={sidebarIndexClicked === index}
-            />
+              className={cx("link-sidebar-items")}
+            >
+              <SidebarItem
+                key={index}
+                index={index}
+                name={sidebarItems[index].name}
+                icon={sidebarItems[index].icon}
+                onClick={() => setSidebarIndexClicked(index)}
+                active={sidebarIndexClicked === index}
+              />
+            </Link>
           );
         })}
       </div>

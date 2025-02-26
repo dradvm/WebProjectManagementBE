@@ -25,7 +25,10 @@ function SidebarItem({ name, icon, onClick, active, index }) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {loadedIcon && <FontAwesomeIcon icon={loadedIcon} />} {name}
+      {loadedIcon && (
+        <FontAwesomeIcon icon={loadedIcon} style={{ paddingRight: "8px" }} />
+      )}{" "}
+      {name}
     </div>
   );
 }
