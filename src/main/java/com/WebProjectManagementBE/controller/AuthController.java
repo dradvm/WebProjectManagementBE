@@ -11,9 +11,11 @@ import com.WebProjectManagementBE.service.JWTService;
 import com.WebProjectManagementBE.service.NguoiDungService;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -79,9 +81,22 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequestDTO authRequestDTO) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequestDTO.getEmail(), authRequestDTO.getMatKhau()));
-        String token =  jwtService.generateToken(nguoiDungService.findByEmail(authRequestDTO.getEmail()).getMaNguoiDung());
-        return ResponseEntity.ok(token);
+        try {
+            Map<String, String> response = new HashMap<>();
+
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequestDTO.getEmail(), authRequestDTO.getMatKhau()));
+            String token =  jwtService.generateToken(nguoiDungService.findByEmail(authRequestDTO.getEmail()).getMaNguoiDung());
+
+            response.put("token", token);
+            return ResponseEntity.ok(response);
+        } catch (AuthenticationException e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("status", 401);
+            errorResponse.put("message", "Invalid email or password. Please try again!");
+
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+        }
+
     }
 
     @PostMapping("/test")

@@ -93,3 +93,7 @@ CREATE TABLE QuanLyDuAn (
 );
 
 insert into quyen values ('A', 'B')
+
+
+delete from NguoiDung
+select * from NguoiDung
