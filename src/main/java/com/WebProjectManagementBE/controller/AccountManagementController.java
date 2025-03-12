@@ -46,15 +46,21 @@ public class AccountManagementController {
         return ResponseEntity.ok("Cập nhật thông tin tài khoản thành công!");
     }
 
-    //Vô hiệu hóa tài khoản
-    @DeleteMapping("/{maNguoiDung}")
-    public ResponseEntity<?> disableAccount(@PathVariable String maNguoiDung){
+    //Chuyển đổi trạng thái tài khoản (Vô hiệu hóa/Kích hoạt)
+    @PostMapping("/{maNguoiDung}/{isActive}")
+    public ResponseEntity<?> toggleAccountStatus(
+            @PathVariable String maNguoiDung,
+            @PathVariable boolean isActive
+    ) {
         NguoiDung account = nguoiDungService.findByMaNguoiDung(maNguoiDung);
-        if (account == null){
+        if (account == null) {
             return ResponseEntity.badRequest().body("Tài khoản không tồn tại!");
         }
-        account.setActive(false);
+
+        account.setActive(isActive);
         nguoiDungService.updateNguoiDung(account);
-        return ResponseEntity.ok("Tài khoản đã bị vô hiệu hóa!");
+
+        String status = isActive ? "kích hoạt" : "vô hiệu hóa";
+        return ResponseEntity.ok("Tài khoản đã được " + status + " thành công!");
     }
 }
