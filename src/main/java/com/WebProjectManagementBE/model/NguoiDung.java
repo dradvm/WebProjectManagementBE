@@ -64,6 +64,10 @@ public class NguoiDung implements Serializable {
     @jakarta.validation.constraints.Size(min = 1, max = 255)
     @Column(name = "matKhau")
     private String matKhau;
+    @Basic(optional = false)
+    @jakarta.validation.constraints.NotNull
+    @Column(name = "active")
+    private boolean active = true;
     @ManyToMany(mappedBy = "nguoiDungCollection")
     private Collection<DuAn> duAnCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "maNguoiDung")
@@ -133,6 +137,10 @@ public class NguoiDung implements Serializable {
     public void setMatKhau(String matKhau) {
         this.matKhau = matKhau;
     }
+
+    public boolean getActive() { return active; }
+
+    public void setActive(boolean active) {this.active = active; }
 
     @jakarta.xml.bind.annotation.XmlTransient
     public Collection<DuAn> getDuAnCollection() {

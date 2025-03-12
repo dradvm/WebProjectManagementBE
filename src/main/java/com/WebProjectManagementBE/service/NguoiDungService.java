@@ -6,6 +6,8 @@ import com.WebProjectManagementBE.repository.NguoiDungRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class NguoiDungService {
 
@@ -58,4 +60,8 @@ public class NguoiDungService {
     public NguoiDung findByMaNguoiDung(String maNguoiDung) {
         return nguoiDungRepository.findByMaNguoiDung(maNguoiDung);
     }
+
+    public List<NguoiDung> findAllAccounts() { return nguoiDungRepository.findAll();}
+
+    public void updateNguoiDung(NguoiDung nguoiDung) { nguoiDungRepository.save(nguoiDung);}
 }

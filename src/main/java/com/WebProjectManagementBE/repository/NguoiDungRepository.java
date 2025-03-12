@@ -7,6 +7,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @RepositoryRestResource(path = "nguoidungs", collectionResourceRel = "data")
 public interface NguoiDungRepository extends JpaRepository<NguoiDung, String> {
 
@@ -17,4 +19,7 @@ public interface NguoiDungRepository extends JpaRepository<NguoiDung, String> {
     boolean existsByEmail(String email);
     NguoiDung findByEmail(String email);
     NguoiDung findByMaNguoiDung(String maNguoiDung);
+    List<NguoiDung> findByActiveTrue();
+    List<NguoiDung> findByActiveFalse();
+
 }
