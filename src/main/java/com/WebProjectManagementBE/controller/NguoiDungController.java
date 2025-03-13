@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/accounts")
-public class AccountManagementController {
+public class NguoiDungController {
 
     @Autowired
     private NguoiDungService nguoiDungService;
