@@ -7,10 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/accounts")
+@RequestMapping("/users")
 public class NguoiDungController {
 
     @Autowired
@@ -22,7 +24,15 @@ public class NguoiDungController {
         List<NguoiDung> accounts = nguoiDungService.findAllAccounts();
         return ResponseEntity.ok(accounts);
     }
-
+    // Lấy thông tin tài khoản theo mã người dùng
+    @GetMapping("/{maNguoiDung}")
+    public ResponseEntity<?> getUsersByMaNguoiDung(@PathVariable String maNguoiDung) {
+        NguoiDung account = nguoiDungService.findByMaNguoiDung(maNguoiDung);
+        if (account == null) {
+            return ResponseEntity.badRequest().body("Tài khoản không tồn tại!");
+        }
+        return ResponseEntity.ok(account);
+    }
     //Thêm tài khoản
     @PostMapping
     public ResponseEntity<?> addAccount(@RequestBody NguoiDung nguoiDung){
@@ -47,7 +57,7 @@ public class NguoiDungController {
     }
 
     //Chuyển đổi trạng thái tài khoản (Vô hiệu hóa/Kích hoạt)
-    @PostMapping("/{maNguoiDung}/{isActive}")
+    @PatchMapping("/{maNguoiDung}/active/{isActive}")
     public ResponseEntity<?> toggleAccountStatus(
             @PathVariable String maNguoiDung,
             @PathVariable boolean isActive

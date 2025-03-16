@@ -4,6 +4,8 @@
  */
 package com.WebProjectManagementBE.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
@@ -44,6 +46,7 @@ public class Quyen implements Serializable {
     @Column(name = "tenQuyen")
     private String tenQuyen;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "maQuyen")
+    @JsonIgnore
     private Collection<NguoiDung> nguoiDungCollection;
 
     public Quyen() {
