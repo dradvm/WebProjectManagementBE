@@ -65,4 +65,5 @@ public class NguoiDungService {
     public List<NguoiDung> findAllAccounts() { return nguoiDungRepository.findAll();}
 
     public void updateNguoiDung(NguoiDung nguoiDung) { nguoiDungRepository.save(nguoiDung);}
+
 }
