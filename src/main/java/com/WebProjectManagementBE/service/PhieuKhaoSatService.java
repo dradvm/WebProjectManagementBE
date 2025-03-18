@@ -2,15 +2,13 @@ package com.WebProjectManagementBE.service;
 
 import com.WebProjectManagementBE.model.PhieuKhaoSat;
 import com.WebProjectManagementBE.repository.PhieuKhaoSatRepository;
-import com.google.api.services.forms.v1.model.Form;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class PhieuKhaoSatService {
@@ -18,89 +16,95 @@ public class PhieuKhaoSatService {
     private final GoogleFormsService googleFormsService;
 
     @Autowired
-    public PhieuKhaoSatService(PhieuKhaoSatRepository phieuKhaoSatRepository, GoogleFormsService googleFormsService) {
+    public PhieuKhaoSatService(
+            PhieuKhaoSatRepository phieuKhaoSatRepository,
+            GoogleFormsService googleFormsService) {
         this.phieuKhaoSatRepository = phieuKhaoSatRepository;
         this.googleFormsService = googleFormsService;
     }
 
+    // Lấy danh sách phiếu khảo sát theo mã dự án
+    public List<PhieuKhaoSat> getPhieuKhaoSatByMaDuAn(String maDuAn) {
+        return phieuKhaoSatRepository.findByMaDuAn_MaDuAn(maDuAn);
+    }
+
+    // Lấy tất cả phiếu khảo sát
     public List<PhieuKhaoSat> getAllPhieuKhaoSat() {
         return phieuKhaoSatRepository.findAll();
     }
 
-    public Optional<PhieuKhaoSat> getPhieuKhaoSatById(String id) {
-        return phieuKhaoSatRepository.findById(id);
+    // Tìm kiếm phiếu khảo sát theo từ khóa
+    public List<PhieuKhaoSat> searchPhieuKhaoSat(String keyword) {
+        return phieuKhaoSatRepository.findByTenPhieuKhaoSatContainingIgnoreCase(keyword);
     }
 
-    public List<PhieuKhaoSat> searchPhieuKhaoSat(String title) {
-        return phieuKhaoSatRepository.findByTenPhieuKhaoSatContaining(title);
+    // Lấy phiếu khảo sát theo ID
+    public PhieuKhaoSat getPhieuKhaoSatById(String maPhieuKhaoSat) {
+        return phieuKhaoSatRepository.findById(maPhieuKhaoSat)
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy phiếu khảo sát với ID: " + maPhieuKhaoSat));
     }
 
+    // Thêm phương thức tạo mã phiếu khảo sát
+    private String generateMaPhieuKhaoSat() {
+        String prefix = "PKS";
+        long count = phieuKhaoSatRepository.count() + 1;
+        return String.format("%s%03d", prefix, count);
+    }
+
+    // Tạo phiếu khảo sát mới
+    @Transactional
     public PhieuKhaoSat createPhieuKhaoSat(PhieuKhaoSat phieuKhaoSat) throws IOException {
-        // Tạo form trên Google Forms
-        Form googleForm = googleFormsService.createForm(
-                phieuKhaoSat.getTenPhieuKhaoSat(), 
-                "Phiếu khảo sát cho dự án: " + phieuKhaoSat.getMaDuAn().getTenDuAn()
+        // Tạo mã phiếu khảo sát
+        phieuKhaoSat.setMaPhieuKhaoSat(generateMaPhieuKhaoSat());
+        
+        // Tạo form trong Google Forms
+        String formId = googleFormsService.createForm(
+            phieuKhaoSat.getTenPhieuKhaoSat(),
+            "Phiếu khảo sát cho dự án: " + phieuKhaoSat.getMaDuAn().getTenDuAn()
         );
-        
         // Cập nhật thông tin form
-        phieuKhaoSat.setLienKet("https://docs.google.com/forms/d/" + googleForm.getFormId() + "/viewform");
-        phieuKhaoSat.setLienKetTraLoi("https://docs.google.com/forms/d/" + googleForm.getFormId() + "/edit#responses");
-        phieuKhaoSat.setNgayGioTao(new Date());
+        phieuKhaoSat.setLienKet("https://docs.google.com/forms/d/" + formId);
+        phieuKhaoSat.setLienKetTraLoi("https://docs.google.com/forms/d/" + formId + "/edit#responses");
         
+        // Lưu vào database
         return phieuKhaoSatRepository.save(phieuKhaoSat);
     }
 
-    public PhieuKhaoSat updatePhieuKhaoSat(String id, PhieuKhaoSat phieuKhaoSatDetails) throws IOException {
-        PhieuKhaoSat phieuKhaoSat = phieuKhaoSatRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy phiếu khảo sát với ID: " + id));
-
-        // Lấy formId từ lienKet
-        String formId = extractFormId(phieuKhaoSat.getLienKet());
-        if (formId != null) {
-            // Cập nhật form trên Google Forms
+    // Cập nhật phiếu khảo sát
+    @Transactional
+    public PhieuKhaoSat updatePhieuKhaoSat(String maPhieuKhaoSat, PhieuKhaoSat phieuKhaoSat) throws IOException {
+        PhieuKhaoSat existingPhieuKhaoSat = getPhieuKhaoSatById(maPhieuKhaoSat);
+        
+        // Cập nhật thông tin cơ bản
+        existingPhieuKhaoSat.setTenPhieuKhaoSat(phieuKhaoSat.getTenPhieuKhaoSat());
+        existingPhieuKhaoSat.setNgayGioMo(phieuKhaoSat.getNgayGioMo());
+        existingPhieuKhaoSat.setNgayGioDong(phieuKhaoSat.getNgayGioDong());
+        
+        // Cập nhật form trong Google Forms
+        try {
             googleFormsService.updateForm(
-                    formId,
-                    phieuKhaoSatDetails.getTenPhieuKhaoSat(),
-                    "Phiếu khảo sát cho dự án: " + phieuKhaoSatDetails.getMaDuAn().getTenDuAn()
+                maPhieuKhaoSat,
+                existingPhieuKhaoSat.getTenPhieuKhaoSat(),
+                "Phiếu khảo sát cho dự án: " + existingPhieuKhaoSat.getMaDuAn().getTenDuAn()
             );
+        } catch (UnsupportedOperationException e) {
+            // Log thông báo và tiếp tục cập nhật trong database
+            System.out.println("Không thể cập nhật form tự động. Vui lòng cập nhật thủ công: " + existingPhieuKhaoSat.getLienKet());
         }
-
-        // Cập nhật thông tin trong database
-        phieuKhaoSat.setTenPhieuKhaoSat(phieuKhaoSatDetails.getTenPhieuKhaoSat());
-        phieuKhaoSat.setNgayGioMo(phieuKhaoSatDetails.getNgayGioMo());
-        phieuKhaoSat.setNgayGioDong(phieuKhaoSatDetails.getNgayGioDong());
-        phieuKhaoSat.setMaDuAn(phieuKhaoSatDetails.getMaDuAn());
-
-        return phieuKhaoSatRepository.save(phieuKhaoSat);
+        
+        return phieuKhaoSatRepository.save(existingPhieuKhaoSat);
     }
 
-    public void deletePhieuKhaoSat(String id) throws IOException {
-        PhieuKhaoSat phieuKhaoSat = phieuKhaoSatRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy phiếu khảo sát với ID: " + id));
-
-        // Lấy formId từ lienKet
-        String formId = extractFormId(phieuKhaoSat.getLienKet());
-        if (formId != null) {
-            try {
-                googleFormsService.deleteForm(formId);
-            } catch (UnsupportedOperationException e) {
-                // Log thông báo và tiếp tục xóa phiếu khảo sát trong database
-                System.out.println("Không thể xóa form tự động. Vui lòng xóa thủ công: " + phieuKhaoSat.getLienKet());
-            }
-        }
-
+    // Xóa phiếu khảo sát
+    @Transactional
+    public void deletePhieuKhaoSat(String maPhieuKhaoSat) throws IOException {
+        PhieuKhaoSat phieuKhaoSat = getPhieuKhaoSatById(maPhieuKhaoSat);
+        // Xóa trong database
         phieuKhaoSatRepository.delete(phieuKhaoSat);
     }
 
-    private String extractFormId(String formUrl) {
-        if (formUrl == null) return null;
-        // URL format: https://docs.google.com/forms/d/[formId]/viewform
-        String[] parts = formUrl.split("/");
-        for (int i = 0; i < parts.length; i++) {
-            if (parts[i].equals("d") && i + 1 < parts.length) {
-                return parts[i + 1];
-            }
-        }
-        return null;
+    // Lấy kết quả khảo sát từ Google Forms
+    public Object getKetQuaKhaoSat(String maPhieuKhaoSat) throws IOException {
+        return googleFormsService.getFormResponses(maPhieuKhaoSat);
     }
 } 

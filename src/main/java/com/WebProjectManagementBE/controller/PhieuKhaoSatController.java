@@ -10,80 +10,58 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/phieuKhaoSat")
+@RequestMapping("/phieu-khao-sat")
 @CrossOrigin(origins = "*")
 public class PhieuKhaoSatController {
+    private final PhieuKhaoSatService phieuKhaoSatService;
 
     @Autowired
-    private PhieuKhaoSatService phieuKhaoSatService;
+    public PhieuKhaoSatController(PhieuKhaoSatService phieuKhaoSatService) {
+        this.phieuKhaoSatService = phieuKhaoSatService;
+    }
 
-    /**
-     * Lấy danh sách tất cả phiếu khảo sát
-     */
     @GetMapping
-    public List<PhieuKhaoSat> getAllPhieuKhaoSat() {
-        return phieuKhaoSatService.getAllPhieuKhaoSat();
+    public ResponseEntity<List<PhieuKhaoSat>> getAllPhieuKhaoSat() {
+        return ResponseEntity.ok(phieuKhaoSatService.getAllPhieuKhaoSat());
     }
 
-    /**
-     * Tìm kiếm phiếu khảo sát theo tiêu đề
-     */
+    @GetMapping("/{maPhieuKhaoSat}")
+    public ResponseEntity<PhieuKhaoSat> getPhieuKhaoSatByMa(@PathVariable String maPhieuKhaoSat) {
+        return ResponseEntity.ok(phieuKhaoSatService.getPhieuKhaoSatById(maPhieuKhaoSat));
+    }
+
     @GetMapping("/search")
-    public List<PhieuKhaoSat> searchPhieuKhaoSat(@RequestParam String title) {
-        return phieuKhaoSatService.searchPhieuKhaoSat(title);
+    public ResponseEntity<List<PhieuKhaoSat>> searchPhieuKhaoSat(@RequestParam String title) {
+        return ResponseEntity.ok(phieuKhaoSatService.searchPhieuKhaoSat(title));
     }
 
-    /**
-     * Lấy chi tiết một phiếu khảo sát
-     */
-    @GetMapping("/{id}")
-    public ResponseEntity<PhieuKhaoSat> getPhieuKhaoSatById(@PathVariable String id) {
-        return phieuKhaoSatService.getPhieuKhaoSatById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    /**
-     * Tạo phiếu khảo sát mới
-     */
     @PostMapping
-    public ResponseEntity<?> createPhieuKhaoSat(@RequestBody PhieuKhaoSat phieuKhaoSat) {
-        try {
-            PhieuKhaoSat createdPhieuKhaoSat = phieuKhaoSatService.createPhieuKhaoSat(phieuKhaoSat);
-            return ResponseEntity.ok(createdPhieuKhaoSat);
-        } catch (IOException e) {
-            return ResponseEntity.internalServerError()
-                    .body("Lỗi khi tạo Google Form: " + e.getMessage());
-        }
+    public ResponseEntity<PhieuKhaoSat> createPhieuKhaoSat(@RequestBody PhieuKhaoSat phieuKhaoSat) throws IOException {
+        return ResponseEntity.ok(phieuKhaoSatService.createPhieuKhaoSat(phieuKhaoSat));
     }
 
-    /**
-     * Cập nhật phiếu khảo sát
-     */
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updatePhieuKhaoSat(
-            @PathVariable String id,
-            @RequestBody PhieuKhaoSat phieuKhaoSat) {
-        try {
-            PhieuKhaoSat updatedPhieuKhaoSat = phieuKhaoSatService.updatePhieuKhaoSat(id, phieuKhaoSat);
-            return ResponseEntity.ok(updatedPhieuKhaoSat);
-        } catch (IOException e) {
-            return ResponseEntity.internalServerError()
-                    .body("Lỗi khi cập nhật Google Form: " + e.getMessage());
-        }
+    @PutMapping("/{maPhieuKhaoSat}")
+    public ResponseEntity<PhieuKhaoSat> updatePhieuKhaoSat(
+            @PathVariable String maPhieuKhaoSat,
+            @RequestBody PhieuKhaoSat phieuKhaoSatDetails) throws IOException {
+        return ResponseEntity.ok(phieuKhaoSatService.updatePhieuKhaoSat(maPhieuKhaoSat, phieuKhaoSatDetails));
     }
 
-    /**
-     * Xóa phiếu khảo sát
-     */
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletePhieuKhaoSat(@PathVariable String id) {
-        try {
-            phieuKhaoSatService.deletePhieuKhaoSat(id);
-            return ResponseEntity.ok().build();
-        } catch (IOException e) {
-            return ResponseEntity.internalServerError()
-                    .body("Lỗi khi xóa Google Form: " + e.getMessage());
-        }
+    @DeleteMapping("/{maPhieuKhaoSat}")
+    public ResponseEntity<Void> deletePhieuKhaoSat(@PathVariable String maPhieuKhaoSat) throws IOException {
+        phieuKhaoSatService.deletePhieuKhaoSat(maPhieuKhaoSat);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{maPhieuKhaoSat}/ket-qua")
+    public ResponseEntity<Object> getKetQuaKhaoSat(@PathVariable String maPhieuKhaoSat) throws IOException {
+        return ResponseEntity.ok(phieuKhaoSatService.getKetQuaKhaoSat(maPhieuKhaoSat));
+    }
+
+
+    @GetMapping("/du-an/{maDuAn}")
+    public ResponseEntity<List<PhieuKhaoSat>> getPhieuKhaoSatByMaDuAn(@PathVariable String maDuAn) {
+        List<PhieuKhaoSat> phieuKhaoSatList = phieuKhaoSatService.getPhieuKhaoSatByMaDuAn(maDuAn);
+        return ResponseEntity.ok(phieuKhaoSatList);
     }
 }

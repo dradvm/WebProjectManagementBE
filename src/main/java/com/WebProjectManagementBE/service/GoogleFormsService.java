@@ -65,30 +65,14 @@ public class GoogleFormsService {
                 .build();
     }
 
-    public Form createForm(String title, String description) throws IOException {
-        // Bước 1: Tạo form chỉ với title
+    public String createForm(String title, String description) throws IOException {
         Form form = new Form()
-                .setInfo(new Info().setTitle(title));
+                .setInfo(new Info()
+                        .setTitle(title)
+                        .setDocumentTitle(description));
+
         Form createdForm = formsService.forms().create(form).execute();
-
-        // Bước 2: Nếu có description, cập nhật form để thêm description
-        if (description != null && !description.isEmpty()) {
-            BatchUpdateFormRequest updateRequest = new BatchUpdateFormRequest()
-                    .setRequests(Collections.singletonList(
-                            new Request().setUpdateFormInfo(
-                                    new UpdateFormInfoRequest()
-                                            .setInfo(new Info()
-                                                    .setTitle(title)
-                                                    .setDescription(description))
-                                            .setUpdateMask("description")
-                            )
-                    ));
-            
-            formsService.forms().batchUpdate(createdForm.getFormId(), updateRequest).execute();
-            createdForm = formsService.forms().get(createdForm.getFormId()).execute();
-        }
-
-        return createdForm;
+        return createdForm.getFormId();
     }
 
     public Form getForm(String formId) throws IOException {
@@ -100,7 +84,7 @@ public class GoogleFormsService {
         form.getInfo()
                 .setTitle(title)
                 .setDescription(description);
-        
+
         BatchUpdateFormRequest updateRequest = new BatchUpdateFormRequest()
                 .setRequests(Collections.singletonList(
                         new Request().setUpdateFormInfo(
@@ -109,21 +93,16 @@ public class GoogleFormsService {
                                         .setUpdateMask("title,description")
                         )
                 ));
-        
+
         formsService.forms().batchUpdate(formId, updateRequest).execute();
         return form;
     }
 
-    public void deleteForm(String formId) throws IOException {
-        throw new UnsupportedOperationException(
-                "Google Forms API không hỗ trợ xóa form. Vui lòng xóa form thủ công tại: " +
-                "https://docs.google.com/forms/" + formId);
-    }
 
     public Map<String, Object> getFormResponses(String formId) throws IOException {
         // Lấy thông tin form
         Form form = formsService.forms().get(formId).execute();
-        
+
         // Lấy danh sách câu trả lời
         ListFormResponsesResponse responses = formsService.forms()
                 .responses()
@@ -135,7 +114,7 @@ public class GoogleFormsService {
         result.put("formInfo", form.getInfo());
         result.put("totalResponses", responses.getResponses() != null ? responses.getResponses().size() : 0);
         result.put("responses", responses.getResponses());
-        
+
         // Thống kê cho từng câu hỏi
         Map<String, Map<String, Integer>> questionStats = new HashMap<>();
         if (responses.getResponses() != null) {
@@ -143,10 +122,10 @@ public class GoogleFormsService {
                 for (Map.Entry<String, Answer> answer : response.getAnswers().entrySet()) {
                     String questionId = answer.getKey();
                     Answer answerValue = answer.getValue();
-                    
+
                     // Tạo hoặc lấy thống kê cho câu hỏi
                     Map<String, Integer> stats = questionStats.computeIfAbsent(questionId, k -> new HashMap<>());
-                    
+
                     // Cập nhật thống kê dựa trên loại câu trả lời
                     if (answerValue.getTextAnswers() != null) {
                         for (TextAnswer textAnswer : answerValue.getTextAnswers().getAnswers()) {
