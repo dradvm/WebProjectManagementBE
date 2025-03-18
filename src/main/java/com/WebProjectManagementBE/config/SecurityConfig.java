@@ -39,7 +39,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable()) // Tắt CSRF
             .cors(cors -> cors.configure(http))
             .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/register/nguoidung", "/login", "/test/**", "/users/**").permitAll()
+                    .requestMatchers("/register/nguoidung", "/login", "/test/**", "/phieuKhaoSat/**").permitAll()
                     .anyRequest().authenticated()
             )
             .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

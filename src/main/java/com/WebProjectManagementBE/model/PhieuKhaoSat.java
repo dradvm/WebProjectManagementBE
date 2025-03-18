@@ -33,6 +33,7 @@ import java.util.Date;
     @NamedQuery(name = "PhieuKhaoSat.findByMaPhieuKhaoSat", query = "SELECT p FROM PhieuKhaoSat p WHERE p.maPhieuKhaoSat = :maPhieuKhaoSat"),
     @NamedQuery(name = "PhieuKhaoSat.findByTenPhieuKhaoSat", query = "SELECT p FROM PhieuKhaoSat p WHERE p.tenPhieuKhaoSat = :tenPhieuKhaoSat"),
     @NamedQuery(name = "PhieuKhaoSat.findByLienKet", query = "SELECT p FROM PhieuKhaoSat p WHERE p.lienKet = :lienKet"),
+    @NamedQuery(name = "PhieuKhaoSat.findByLienKetTraLoi", query = "SELECT p FROM PhieuKhaoSat p WHERE p.lienKetTraLoi = :lienKetTraLoi"),
     @NamedQuery(name = "PhieuKhaoSat.findByNgayGioTao", query = "SELECT p FROM PhieuKhaoSat p WHERE p.ngayGioTao = :ngayGioTao"),
     @NamedQuery(name = "PhieuKhaoSat.findByNgayGioMo", query = "SELECT p FROM PhieuKhaoSat p WHERE p.ngayGioMo = :ngayGioMo"),
     @NamedQuery(name = "PhieuKhaoSat.findByNgayGioDong", query = "SELECT p FROM PhieuKhaoSat p WHERE p.ngayGioDong = :ngayGioDong")})
@@ -53,6 +54,8 @@ public class PhieuKhaoSat implements Serializable {
     @jakarta.validation.constraints.Size(max = 2147483647)
     @Column(name = "lienKet")
     private String lienKet;
+    @Column(name = "lienKetTraLoi")
+    private String lienKetTraLoi;
     @Column(name = "ngayGioTao")
     @Temporal(TemporalType.TIMESTAMP)
     private Date ngayGioTao;
@@ -103,6 +106,10 @@ public class PhieuKhaoSat implements Serializable {
     public void setLienKet(String lienKet) {
         this.lienKet = lienKet;
     }
+
+    public String getLienKetTraLoi() { return lienKetTraLoi; }
+
+    public void setLienKetTraLoi(String lienKetTraLoi) { this.lienKetTraLoi = lienKetTraLoi; }
 
     public Date getNgayGioTao() {
         return ngayGioTao;
