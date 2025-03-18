@@ -11,5 +11,4 @@ public class NguoiDungRegisterDTO {
     private String soDienThoai;
     private String email;
     private String matKhau;
-
 }

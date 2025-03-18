@@ -23,4 +23,8 @@ public interface NguoiDungRepository extends JpaRepository<NguoiDung, String> {
     List<NguoiDung> findByActiveTrue();
     List<NguoiDung> findByActiveFalse();
 
+    @Query("SELECT nd FROM NguoiDung nd " +
+            "LEFT JOIN nd.duAnCollection da WITH da.maDuAn = :maDuAn " +
+            "WHERE da.maDuAn IS NULL")
+    List<NguoiDung> findUsersNotInProject(@Param("maDuAn") String maDuAn);
 }

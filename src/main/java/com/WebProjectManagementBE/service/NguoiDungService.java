@@ -4,9 +4,11 @@ import com.WebProjectManagementBE.model.NguoiDung;
 import com.WebProjectManagementBE.model.Quyen;
 import com.WebProjectManagementBE.repository.NguoiDungRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -66,4 +68,15 @@ public class NguoiDungService {
 
     public void updateNguoiDung(NguoiDung nguoiDung) { nguoiDungRepository.save(nguoiDung);}
 
+    public NguoiDung getCurrentSessionNguoiDung() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+        String email = userDetails.getUsername();
+        return nguoiDungRepository.findByEmail(email);
+    }
+
+    public List<NguoiDung> getNguoiDungNotInDuAn(String maDuAn) {
+        return nguoiDungRepository.findUsersNotInProject(maDuAn);
+    }
 }

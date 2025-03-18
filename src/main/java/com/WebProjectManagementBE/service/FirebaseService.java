@@ -3,6 +3,8 @@ package com.WebProjectManagementBE.service;
 
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Bucket;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
 import com.google.firebase.cloud.StorageClient;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -64,5 +66,22 @@ public class FirebaseService {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
         result += formatter.format(cld.getTime()) + "." + extension;
         return result;
+    }
+
+    public String generateFileNameDuAn(String maDuAn, MultipartFile file) {
+        return "DuAn/" + maDuAn + "/" + generateFileName(file);
+    }
+
+
+    public String getDownloadUrl(String filePath) {
+        Bucket bucket = StorageClient.getInstance().bucket();
+
+        Blob blob = bucket.get(filePath);
+
+        if (blob != null) {
+            return blob.signUrl(7, TimeUnit.DAYS).toString();
+        } else {
+            return null;
+        }
     }
 }

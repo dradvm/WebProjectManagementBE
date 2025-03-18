@@ -1,6 +1,4 @@
 package com.WebProjectManagementBE.config;
-import com.WebProjectManagementBE.customSecurity.CustomAuthenticationEntryPoint;
-import com.WebProjectManagementBE.customSecurity.CustomAuthenticationFailureHandler;
 import com.WebProjectManagementBE.filter.JWTFilter;
 import com.WebProjectManagementBE.service.JWTService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,12 +32,12 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, CustomAuthenticationEntryPoint authenticationEntryPoint) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable()) // Tắt CSRF
             .cors(cors -> cors.configure(http))
             .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/register/nguoidung", "/login", "/test/**", "/phieuKhaoSat/**").permitAll()
+                    .requestMatchers("/register/nguoidung", "/login").permitAll()
                     .anyRequest().authenticated()
             )
             .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -57,7 +55,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:3000"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);
 

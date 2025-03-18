@@ -4,6 +4,7 @@
  */
 package com.WebProjectManagementBE.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,7 +17,10 @@ import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import org.springframework.cglib.core.Local;
+
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 
 /**
@@ -52,14 +56,11 @@ public class TapTin implements Serializable {
     @Basic(optional = false)
     @jakarta.validation.constraints.NotNull
     @Column(name = "ngayTao")
-    @Temporal(TemporalType.DATE)
-    private Date ngayTao;
-    @Lob
-    @Column(name = "tapTin")
-    private byte[] tapTin;
+    private LocalDate ngayTao;
     @JoinColumn(name = "maDuAn", referencedColumnName = "maDuAn")
     @ManyToOne(optional = false)
     private DuAn maDuAn;
+    @JsonIgnore
     @JoinColumn(name = "maLoai", referencedColumnName = "maLoai")
     @ManyToOne(optional = false)
     private LoaiTapTin maLoai;
@@ -71,7 +72,7 @@ public class TapTin implements Serializable {
         this.maTapTin = maTapTin;
     }
 
-    public TapTin(String maTapTin, String tenTapTin, Date ngayTao) {
+    public TapTin(String maTapTin, String tenTapTin, LocalDate ngayTao) {
         this.maTapTin = maTapTin;
         this.tenTapTin = tenTapTin;
         this.ngayTao = ngayTao;
@@ -101,21 +102,14 @@ public class TapTin implements Serializable {
         this.lienKet = lienKet;
     }
 
-    public Date getNgayTao() {
+    public LocalDate getNgayTao() {
         return ngayTao;
     }
 
-    public void setNgayTao(Date ngayTao) {
+    public void setNgayTao(LocalDate ngayTao) {
         this.ngayTao = ngayTao;
     }
 
-    public byte[] getTapTin() {
-        return tapTin;
-    }
-
-    public void setTapTin(byte[] tapTin) {
-        this.tapTin = tapTin;
-    }
 
     public DuAn getMaDuAn() {
         return maDuAn;

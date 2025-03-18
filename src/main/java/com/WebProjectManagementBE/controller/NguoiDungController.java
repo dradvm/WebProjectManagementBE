@@ -7,7 +7,9 @@ import com.WebProjectManagementBE.pattern.chainOfResponsibility.EmailNguoiDungVa
 import com.WebProjectManagementBE.pattern.chainOfResponsibility.NguoiDungValidator;
 import com.WebProjectManagementBE.pattern.chainOfResponsibility.SoDienThoaiNguoiDungValidator;
 import com.WebProjectManagementBE.pattern.factory.NguoiDungFactory;
+import com.WebProjectManagementBE.service.DuAnService;
 import com.WebProjectManagementBE.service.NguoiDungService;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,22 +27,16 @@ public class NguoiDungController {
     private NguoiDungService nguoiDungService;
 
     @Autowired
-    private NguoiDungFactory nguoiDungFactory;
+    DuAnService duAnService;
+
+    @Autowired
+    NguoiDungFactory nguoiDungFactory;
+
     //Lấy dánh sách tất cả tài khoản
     @GetMapping
-    public ResponseEntity<?> getAllAccounts() {
+    public ResponseEntity<?> getAllAccounts(){
         List<NguoiDung> accounts = nguoiDungService.findAllAccounts();
         return ResponseEntity.ok(accounts);
-    }
-
-    // Lấy thông tin tài khoản theo mã người dùng
-    @GetMapping("/{maNguoiDung}")
-    public ResponseEntity<?> getUsersByMaNguoiDung(@PathVariable String maNguoiDung) {
-        NguoiDung account = nguoiDungService.findByMaNguoiDung(maNguoiDung);
-        if (account == null) {
-            return ResponseEntity.badRequest().body("Tài khoản không tồn tại!");
-        }
-        return ResponseEntity.ok(account);
     }
 
     //Thêm tài khoản
@@ -58,9 +54,7 @@ public class NguoiDungController {
 
         NguoiDung nguoiDung = nguoiDungFactory.createNguoiDung(nguoiDungRegisterDTO);
         nguoiDungService.registerNguoiDung(nguoiDung);
-
-        response.put("message", "Thành công");
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok("Tài khoản được thêm thành công!");
     }
 
     //Chỉnh sửa tài khoản
@@ -106,7 +100,7 @@ public class NguoiDungController {
     }
 
     //Chuyển đổi trạng thái tài khoản (Vô hiệu hóa/Kích hoạt)
-    @PatchMapping("/{maNguoiDung}/active/{isActive}")
+    @PostMapping("/{maNguoiDung}/{isActive}")
     public ResponseEntity<?> toggleAccountStatus(
             @PathVariable String maNguoiDung,
             @PathVariable boolean isActive
@@ -122,4 +116,21 @@ public class NguoiDungController {
         String status = isActive ? "kích hoạt" : "vô hiệu hóa";
         return ResponseEntity.ok("Tài khoản đã được " + status + " thành công!");
     }
+
+
+    @GetMapping("/listNguoiDungNotInDuAn/{maDuAn}")
+    public ResponseEntity<?> getListNguoiDungNotInDuAn(@PathVariable String maDuAn) {
+
+        if (duAnService.isDuAnOwnedByUser(maDuAn)) {
+            List<NguoiDung> nguoiDungs = nguoiDungService.getNguoiDungNotInDuAn(maDuAn);
+            return ResponseEntity.ok(nguoiDungs);
+        }
+        else {
+            return ResponseEntity.internalServerError().body("Không được phép truy cập");
+        }
+
+
+
+    }
+
 }

@@ -4,6 +4,7 @@
  */
 package com.WebProjectManagementBE.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -19,6 +20,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Date;
 
@@ -58,26 +60,27 @@ public class DuAn implements Serializable {
     @Basic(optional = false)
     @jakarta.validation.constraints.NotNull
     @Column(name = "ngayBatDau")
-    @Temporal(TemporalType.DATE)
-    private Date ngayBatDau;
+    private LocalDate ngayBatDau;
     @Basic(optional = false)
     @jakarta.validation.constraints.NotNull
     @Column(name = "ngayKetThuc")
-    @Temporal(TemporalType.DATE)
-    private Date ngayKetThuc;
+    private LocalDate ngayKetThuc;
     @jakarta.validation.constraints.Size(max = 50)
     @Column(name = "trangThai")
     private String trangThai;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "tienDoHoanThanh")
     private Double tienDoHoanThanh;
+    @JsonIgnore
     @JoinTable(name = "QuanLyDuAn", joinColumns = {
         @JoinColumn(name = "maDuAn", referencedColumnName = "maDuAn")}, inverseJoinColumns = {
         @JoinColumn(name = "maNguoiDung", referencedColumnName = "maNguoiDung")})
     @ManyToMany
     private Collection<NguoiDung> nguoiDungCollection;
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "maDuAn")
     private Collection<PhieuKhaoSat> phieuKhaoSatCollection;
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "maDuAn")
     private Collection<TapTin> tapTinCollection;
 
@@ -88,7 +91,7 @@ public class DuAn implements Serializable {
         this.maDuAn = maDuAn;
     }
 
-    public DuAn(String maDuAn, String tenDuAn, Date ngayBatDau, Date ngayKetThuc) {
+    public DuAn(String maDuAn, String tenDuAn, LocalDate ngayBatDau, LocalDate ngayKetThuc) {
         this.maDuAn = maDuAn;
         this.tenDuAn = tenDuAn;
         this.ngayBatDau = ngayBatDau;
@@ -119,19 +122,19 @@ public class DuAn implements Serializable {
         this.moTa = moTa;
     }
 
-    public Date getNgayBatDau() {
+    public LocalDate getNgayBatDau() {
         return ngayBatDau;
     }
 
-    public void setNgayBatDau(Date ngayBatDau) {
+    public void setNgayBatDau(LocalDate ngayBatDau) {
         this.ngayBatDau = ngayBatDau;
     }
 
-    public Date getNgayKetThuc() {
+    public LocalDate getNgayKetThuc() {
         return ngayKetThuc;
     }
 
-    public void setNgayKetThuc(Date ngayKetThuc) {
+    public void setNgayKetThuc(LocalDate ngayKetThuc) {
         this.ngayKetThuc = ngayKetThuc;
     }
 
@@ -202,5 +205,5 @@ public class DuAn implements Serializable {
     public String toString() {
         return "com.JavaWebProject.JavaWebProject.config.DuAn[ maDuAn=" + maDuAn + " ]";
     }
-    
+
 }

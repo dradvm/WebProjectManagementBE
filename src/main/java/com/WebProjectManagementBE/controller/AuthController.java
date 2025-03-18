@@ -93,7 +93,6 @@ public class AuthController {
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("status", 401);
             errorResponse.put("message", "Invalid email or password. Please try again!");
-
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
         }
 
