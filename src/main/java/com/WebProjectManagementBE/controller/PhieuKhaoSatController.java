@@ -6,19 +6,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
 @RequestMapping("/phieuKhaoSat")
+@CrossOrigin(origins = "*")
 public class PhieuKhaoSatController {
 
     @Autowired
     private PhieuKhaoSatService phieuKhaoSatService;
 
     /**
-     * Lấy danh sách tất cả phiếu khảo sát.
-     *
-     * @return Danh sách các phiếu khảo sát.
+     * Lấy danh sách tất cả phiếu khảo sát
      */
     @GetMapping
     public List<PhieuKhaoSat> getAllPhieuKhaoSat() {
@@ -26,61 +26,64 @@ public class PhieuKhaoSatController {
     }
 
     /**
-     * Lấy phiếu khảo sát theo ID.
-     *
-     * @param id Mã ID của phiếu khảo sát.
-     * @return Phiếu khảo sát tìm được hoặc trả về lỗi NOT_FOUND.
+     * Tìm kiếm phiếu khảo sát theo tiêu đề
+     */
+    @GetMapping("/search")
+    public List<PhieuKhaoSat> searchPhieuKhaoSat(@RequestParam String title) {
+        return phieuKhaoSatService.searchPhieuKhaoSat(title);
+    }
+
+    /**
+     * Lấy chi tiết một phiếu khảo sát
      */
     @GetMapping("/{id}")
     public ResponseEntity<PhieuKhaoSat> getPhieuKhaoSatById(@PathVariable String id) {
         return phieuKhaoSatService.getPhieuKhaoSatById(id)
-                .map(ResponseEntity::ok) // Nếu tìm thấy, trả về ResponseEntity.ok
-                .orElse(ResponseEntity.notFound().build()); // Nếu không tìm thấy, trả về NOT_FOUND
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     /**
-     * Tạo một phiếu khảo sát mới.
-     *
-     * @param phieuKhaoSat Thông tin phiếu khảo sát cần tạo.
-     * @return Phiếu khảo sát đã được tạo và lưu vào cơ sở dữ liệu.
+     * Tạo phiếu khảo sát mới
      */
     @PostMapping
-    public ResponseEntity<PhieuKhaoSat> createPhieuKhaoSat(@RequestBody PhieuKhaoSat phieuKhaoSat) {
-        // Gọi service để tạo phiếu khảo sát và liên kết Google Form
-        PhieuKhaoSat createdPhieuKhaoSat = phieuKhaoSatService.createPhieuKhaoSat(phieuKhaoSat);
-        return ResponseEntity.ok(createdPhieuKhaoSat);
+    public ResponseEntity<?> createPhieuKhaoSat(@RequestBody PhieuKhaoSat phieuKhaoSat) {
+        try {
+            PhieuKhaoSat createdPhieuKhaoSat = phieuKhaoSatService.createPhieuKhaoSat(phieuKhaoSat);
+            return ResponseEntity.ok(createdPhieuKhaoSat);
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError()
+                    .body("Lỗi khi tạo Google Form: " + e.getMessage());
+        }
     }
 
     /**
-     * Cập nhật phiếu khảo sát theo ID.
-     *
-     * @param id           Mã ID của phiếu khảo sát cần cập nhật.
-     * @param phieuKhaoSat Nội dung thông tin cần cập nhật.
-     * @return Phiếu khảo sát sau khi được cập nhật hoặc lỗi nếu không tìm thấy ID.
+     * Cập nhật phiếu khảo sát
      */
-    @PatchMapping("/{id}")
-    public ResponseEntity<PhieuKhaoSat> updatePhieuKhaoSat(
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updatePhieuKhaoSat(
             @PathVariable String id,
             @RequestBody PhieuKhaoSat phieuKhaoSat) {
         try {
             PhieuKhaoSat updatedPhieuKhaoSat = phieuKhaoSatService.updatePhieuKhaoSat(id, phieuKhaoSat);
             return ResponseEntity.ok(updatedPhieuKhaoSat);
-        } catch (IllegalArgumentException ex) {
-            return ResponseEntity.notFound().build(); // Nếu không tìm thấy phiếu khảo sát
-        } catch (Exception ex) {
-            return ResponseEntity.status(500).body(null); // Các lỗi khác
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError()
+                    .body("Lỗi khi cập nhật Google Form: " + e.getMessage());
         }
     }
 
     /**
-     * Xóa phiếu khảo sát theo ID.
-     *
-     * @param id Mã ID của phiếu khảo sát cần xóa.
-     * @return Trả về trạng thái NO_CONTENT sau khi hoàn thành xóa thành công.
+     * Xóa phiếu khảo sát
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePhieuKhaoSat(@PathVariable String id) {
-        phieuKhaoSatService.deletePhieuKhaoSat(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> deletePhieuKhaoSat(@PathVariable String id) {
+        try {
+            phieuKhaoSatService.deletePhieuKhaoSat(id);
+            return ResponseEntity.ok().build();
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError()
+                    .body("Lỗi khi xóa Google Form: " + e.getMessage());
+        }
     }
 }
