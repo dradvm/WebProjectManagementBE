@@ -1,15 +1,22 @@
 package com.WebProjectManagementBE.service;
 
+import com.WebProjectManagementBE.model.DuAn;
 import com.WebProjectManagementBE.model.NguoiDung;
+import com.WebProjectManagementBE.model.QuanLyDuAn;
 import com.WebProjectManagementBE.model.Quyen;
+import com.WebProjectManagementBE.repository.DuAnRepository;
 import com.WebProjectManagementBE.repository.NguoiDungRepository;
+import com.WebProjectManagementBE.repository.QuanLyDuAnRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class NguoiDungService {
@@ -19,6 +26,10 @@ public class NguoiDungService {
 
     @Autowired
     private QuyenService quyenService;
+    @Autowired
+    private DuAnRepository duAnRepository;
+    @Autowired
+    private QuanLyDuAnRepository quanLyDuAnRepository;
 
     public String generateNewMaNguoiDung(Quyen quyen) {
         String prefix = "";
@@ -77,6 +88,27 @@ public class NguoiDungService {
     }
 
     public List<NguoiDung> getNguoiDungNotInDuAn(String maDuAn) {
-        return nguoiDungRepository.findUsersNotInProject(maDuAn);
+        DuAn duAn = duAnRepository.findById(maDuAn).orElseThrow();
+        List<QuanLyDuAn> quanLyDuAns = (List<QuanLyDuAn>) duAn.getQuanLyDuAnCollection();
+        Set<String> nguoiDungInDuAnIds = quanLyDuAns.stream()
+                .map(ql -> ql.getNguoiDung().getMaNguoiDung())
+                .collect(Collectors.toSet());
+
+        return nguoiDungRepository.findAll().stream()
+                .filter(nguoiDung -> !nguoiDungInDuAnIds.contains(nguoiDung.getMaNguoiDung()))
+                .collect(Collectors.toList());
+
+
+
+    }
+    public List<NguoiDung> getNguoiDungInDuAn(String maDuAn) {
+        DuAn duAn = duAnRepository.findById(maDuAn).orElseThrow();
+        List<NguoiDung> nguoiDungs = new ArrayList<>();
+
+        for (QuanLyDuAn qlda : duAn.getQuanLyDuAnCollection()) {
+            nguoiDungs.add(qlda.getNguoiDung());
+        }
+
+        return nguoiDungs;
     }
 }

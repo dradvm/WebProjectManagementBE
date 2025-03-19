@@ -1,11 +1,9 @@
 package com.WebProjectManagementBE.service;
 
 import com.WebProjectManagementBE.DTO.DuAnDTO;
-import com.WebProjectManagementBE.model.DuAn;
-import com.WebProjectManagementBE.model.NguoiDung;
-import com.WebProjectManagementBE.model.Quyen;
-import com.WebProjectManagementBE.model.TapTin;
+import com.WebProjectManagementBE.model.*;
 import com.WebProjectManagementBE.repository.DuAnRepository;
+import com.WebProjectManagementBE.repository.QuanLyDuAnRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +23,9 @@ public class DuAnService {
     @Autowired
     NguoiDungService nguoiDungService;
 
+    @Autowired
+    QuanLyDuAnRepository quanLyDuAnRepository;
+
     public enum TrangThai {
         NOTSTARTING("Chưa bắt đầu"),
         ACTIVE("Đang thực hiện"),
@@ -42,9 +43,9 @@ public class DuAnService {
         }
     }
     public static List<String> getTrangThaiValues() {
-        return Arrays.stream(TrangThai.values()) // Lấy tất cả giá trị của enum
-                .map(TrangThai::getValue) // Lấy giá trị `value`
-                .collect(Collectors.toList()); // Chuyển thành danh sách
+        return Arrays.stream(TrangThai.values())
+                .map(TrangThai::getValue)
+                .collect(Collectors.toList());
     }
 
     public DuAn createDuAn(DuAnDTO duAnDTO) {
@@ -58,15 +59,24 @@ public class DuAnService {
         duAn.setTrangThai(TrangThai.ACTIVE.getValue());
 
 
-        List<NguoiDung> currentNguoiDungCollection = (List<NguoiDung>) duAn.getNguoiDungCollection();
-        if (currentNguoiDungCollection == null) {
-            currentNguoiDungCollection = new ArrayList<NguoiDung>();
-        }
-        currentNguoiDungCollection.add(nguoiDungService.getCurrentSessionNguoiDung());
-        duAn.setNguoiDungCollection(currentNguoiDungCollection);
-
         duAnRepository.save(duAn);
+        addNguoiDungDuAn(nguoiDungService.getCurrentSessionNguoiDung(), duAn, true);
+
         return duAn;
+    }
+
+    public void addNguoiDungDuAn(NguoiDung nguoiDung, DuAn duAn, boolean isChuDuAn) {
+        QuanLyDuAnPK quanLyDuAnPK = new QuanLyDuAnPK(nguoiDung.getMaNguoiDung(), duAn.getMaDuAn());
+        QuanLyDuAn quanLyDuAn = new QuanLyDuAn();
+        quanLyDuAn.setQuanLyDuAnPK(quanLyDuAnPK);
+        quanLyDuAn.setNguoiDung(nguoiDung);
+        quanLyDuAn.setDuAn(duAn);
+        quanLyDuAn.setChuDuAn(isChuDuAn);
+
+        quanLyDuAnRepository.save(quanLyDuAn);
+    }
+    public void updateDuAn(DuAn duAn) {
+        duAnRepository.save(duAn);
     }
 
     public String generateNewMaDuAn() {
@@ -102,18 +112,24 @@ public class DuAnService {
 
     public boolean isDuAnOwnedByUser(String maDuAn) {
         NguoiDung user = nguoiDungService.getCurrentSessionNguoiDung();
-        boolean check = false;
 
-        for (DuAn da : user.getDuAnCollection()) {
-            if (da.getMaDuAn().equals(maDuAn)) {
-                check = true;
-                break;
-            }
-        }
-        return check;
+        return quanLyDuAnRepository.findById(new QuanLyDuAnPK(user.getMaNguoiDung(), maDuAn)).orElseThrow().getChuDuAn();
+    }
+
+    public boolean isNguoiDungInDuAn(String maDuAn) {
+        NguoiDung user = nguoiDungService.getCurrentSessionNguoiDung();
+
+        return quanLyDuAnRepository.existsById(new QuanLyDuAnPK(user.getMaNguoiDung(), maDuAn));
     }
 
     public String getOwnerDuAn(DuAn duAn) {
-        return ((List<NguoiDung>) duAn.getNguoiDungCollection()).get(0).getHoTen();
+        for (QuanLyDuAn quanLyDuAn : duAn.getQuanLyDuAnCollection()) {
+            if (quanLyDuAn.getChuDuAn()) {
+                return quanLyDuAn.getNguoiDung().getHoTen();
+            }
+        }
+        return "";
     }
+
+
 }

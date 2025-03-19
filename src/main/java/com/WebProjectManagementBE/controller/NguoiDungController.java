@@ -133,4 +133,9 @@ public class NguoiDungController {
 
     }
 
+    @GetMapping("/listNguoiDungInDuAn/{maDuAn}")
+    public ResponseEntity<?> getListNguoiDungInDuAn(@PathVariable String maDuAn) {
+        List<NguoiDung> nguoiDungs = nguoiDungService.getNguoiDungInDuAn(maDuAn);
+        return ResponseEntity.ok(nguoiDungs);
+    }
 }

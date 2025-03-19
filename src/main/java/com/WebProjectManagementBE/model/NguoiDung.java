@@ -3,15 +3,18 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.WebProjectManagementBE.model;
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
@@ -28,13 +31,14 @@ import java.util.Collection;
 @Table(name = "NguoiDung")
 @jakarta.xml.bind.annotation.XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "NguoiDung.findAll", query = "SELECT n FROM NguoiDung n"),
-    @NamedQuery(name = "NguoiDung.findByMaNguoiDung", query = "SELECT n FROM NguoiDung n WHERE n.maNguoiDung = :maNguoiDung"),
-    @NamedQuery(name = "NguoiDung.findByHoTen", query = "SELECT n FROM NguoiDung n WHERE n.hoTen = :hoTen"),
-    @NamedQuery(name = "NguoiDung.findByLaNam", query = "SELECT n FROM NguoiDung n WHERE n.laNam = :laNam"),
-    @NamedQuery(name = "NguoiDung.findBySoDienThoai", query = "SELECT n FROM NguoiDung n WHERE n.soDienThoai = :soDienThoai"),
-    @NamedQuery(name = "NguoiDung.findByEmail", query = "SELECT n FROM NguoiDung n WHERE n.email = :email"),
-    @NamedQuery(name = "NguoiDung.findByMatKhau", query = "SELECT n FROM NguoiDung n WHERE n.matKhau = :matKhau")})
+        @NamedQuery(name = "NguoiDung.findAll", query = "SELECT n FROM NguoiDung n"),
+        @NamedQuery(name = "NguoiDung.findByMaNguoiDung", query = "SELECT n FROM NguoiDung n WHERE n.maNguoiDung = :maNguoiDung"),
+        @NamedQuery(name = "NguoiDung.findByHoTen", query = "SELECT n FROM NguoiDung n WHERE n.hoTen = :hoTen"),
+        @NamedQuery(name = "NguoiDung.findByLaNam", query = "SELECT n FROM NguoiDung n WHERE n.laNam = :laNam"),
+        @NamedQuery(name = "NguoiDung.findBySoDienThoai", query = "SELECT n FROM NguoiDung n WHERE n.soDienThoai = :soDienThoai"),
+        @NamedQuery(name = "NguoiDung.findByEmail", query = "SELECT n FROM NguoiDung n WHERE n.email = :email"),
+        @NamedQuery(name = "NguoiDung.findByMatKhau", query = "SELECT n FROM NguoiDung n WHERE n.matKhau = :matKhau"),
+        @NamedQuery(name = "NguoiDung.findByActive", query = "SELECT n FROM NguoiDung n WHERE n.active = :active")})
 public class NguoiDung implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -65,12 +69,12 @@ public class NguoiDung implements Serializable {
     @jakarta.validation.constraints.Size(min = 1, max = 255)
     @Column(name = "matKhau")
     private String matKhau;
-    @Basic(optional = false)
-    @jakarta.validation.constraints.NotNull
     @Column(name = "active")
-    private boolean active = true;
-    @ManyToMany(mappedBy = "nguoiDungCollection")
-    private Collection<DuAn> duAnCollection;
+    private Boolean active;
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "nguoiDung")
+    private Collection<QuanLyDuAn> quanLyDuAnCollection;
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "maNguoiDung")
     private Collection<CauTraLoi> cauTraLoiCollection;
     @JoinColumn(name = "maQuyen", referencedColumnName = "maQuyen")
@@ -139,17 +143,21 @@ public class NguoiDung implements Serializable {
         this.matKhau = matKhau;
     }
 
-    public boolean getActive() { return active; }
-
-    public void setActive(boolean active) {this.active = active; }
-
-    @jakarta.xml.bind.annotation.XmlTransient
-    public Collection<DuAn> getDuAnCollection() {
-        return duAnCollection;
+    public Boolean getActive() {
+        return active;
     }
 
-    public void setDuAnCollection(Collection<DuAn> duAnCollection) {
-        this.duAnCollection = duAnCollection;
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+
+    @jakarta.xml.bind.annotation.XmlTransient
+    public Collection<QuanLyDuAn> getQuanLyDuAnCollection() {
+        return quanLyDuAnCollection;
+    }
+
+    public void setQuanLyDuAnCollection(Collection<QuanLyDuAn> quanLyDuAnCollection) {
+        this.quanLyDuAnCollection = quanLyDuAnCollection;
     }
 
     @jakarta.xml.bind.annotation.XmlTransient
@@ -191,7 +199,7 @@ public class NguoiDung implements Serializable {
 
     @Override
     public String toString() {
-        return "com.JavaWebProject.JavaWebProject.config.NguoiDung[ maNguoiDung=" + maNguoiDung + " ]";
+        return "com.JavaWebProject.JavaWebProject.controllers.NguoiDung[ maNguoiDung=" + maNguoiDung + " ]";
     }
-    
+
 }

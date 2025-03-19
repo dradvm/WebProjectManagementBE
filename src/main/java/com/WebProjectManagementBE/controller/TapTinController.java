@@ -48,17 +48,11 @@ public class TapTinController {
     @GetMapping("/duAnTapTinCollection/{maDuAn}")
     public ResponseEntity<?> getDuAnTapTinCollection(@PathVariable String maDuAn) {
 
-        if (duAnService.isDuAnOwnedByUser(maDuAn)) {
-            DuAn duAn = duAnService.getDuAn(maDuAn);
-            List<TapTin> tapTins = (List<TapTin>) duAn.getTapTinCollection();
-            System.out.println(tapTins.size());
-            for (TapTin tt : tapTins) {
-                tt.setLienKet(firebaseService.getDownloadUrl(tt.getLienKet()));
-            }
-            return ResponseEntity.ok(tapTins);
+        DuAn duAn = duAnService.getDuAn(maDuAn);
+        List<TapTin> tapTins = (List<TapTin>) duAn.getTapTinCollection();
+        for (TapTin tt : tapTins) {
+            tt.setLienKet(firebaseService.getDownloadUrl(tt.getLienKet()));
         }
-        else {
-            return ResponseEntity.internalServerError().body("Không được phép truy cập");
-        }
+        return ResponseEntity.ok(tapTins);
     }
 }

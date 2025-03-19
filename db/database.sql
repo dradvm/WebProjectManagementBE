@@ -97,3 +97,11 @@ insert into quyen values ('A', 'B')
 
 delete from NguoiDung
 select * from NguoiDung
+
+update NguoiDung set maQuyen = 'Q2' where maNguoiDung = 'ND000000002'
+
+
+ALTER TABLE [QuanLyDuAn].[dbo].[PhieuKhaoSat] 
+ADD lienKetTraLoi VARCHAR(255);
+
+select * from quyen

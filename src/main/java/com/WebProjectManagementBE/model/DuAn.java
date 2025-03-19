@@ -10,9 +10,6 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
@@ -32,14 +29,14 @@ import java.util.Date;
 @Table(name = "DuAn")
 @jakarta.xml.bind.annotation.XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "DuAn.findAll", query = "SELECT d FROM DuAn d"),
-    @NamedQuery(name = "DuAn.findByMaDuAn", query = "SELECT d FROM DuAn d WHERE d.maDuAn = :maDuAn"),
-    @NamedQuery(name = "DuAn.findByTenDuAn", query = "SELECT d FROM DuAn d WHERE d.tenDuAn = :tenDuAn"),
-    @NamedQuery(name = "DuAn.findByMoTa", query = "SELECT d FROM DuAn d WHERE d.moTa = :moTa"),
-    @NamedQuery(name = "DuAn.findByNgayBatDau", query = "SELECT d FROM DuAn d WHERE d.ngayBatDau = :ngayBatDau"),
-    @NamedQuery(name = "DuAn.findByNgayKetThuc", query = "SELECT d FROM DuAn d WHERE d.ngayKetThuc = :ngayKetThuc"),
-    @NamedQuery(name = "DuAn.findByTrangThai", query = "SELECT d FROM DuAn d WHERE d.trangThai = :trangThai"),
-    @NamedQuery(name = "DuAn.findByTienDoHoanThanh", query = "SELECT d FROM DuAn d WHERE d.tienDoHoanThanh = :tienDoHoanThanh")})
+        @NamedQuery(name = "DuAn.findAll", query = "SELECT d FROM DuAn d"),
+        @NamedQuery(name = "DuAn.findByMaDuAn", query = "SELECT d FROM DuAn d WHERE d.maDuAn = :maDuAn"),
+        @NamedQuery(name = "DuAn.findByTenDuAn", query = "SELECT d FROM DuAn d WHERE d.tenDuAn = :tenDuAn"),
+        @NamedQuery(name = "DuAn.findByMoTa", query = "SELECT d FROM DuAn d WHERE d.moTa = :moTa"),
+        @NamedQuery(name = "DuAn.findByNgayBatDau", query = "SELECT d FROM DuAn d WHERE d.ngayBatDau = :ngayBatDau"),
+        @NamedQuery(name = "DuAn.findByNgayKetThuc", query = "SELECT d FROM DuAn d WHERE d.ngayKetThuc = :ngayKetThuc"),
+        @NamedQuery(name = "DuAn.findByTrangThai", query = "SELECT d FROM DuAn d WHERE d.trangThai = :trangThai"),
+        @NamedQuery(name = "DuAn.findByTienDoHoanThanh", query = "SELECT d FROM DuAn d WHERE d.tienDoHoanThanh = :tienDoHoanThanh")})
 public class DuAn implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -71,15 +68,11 @@ public class DuAn implements Serializable {
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "tienDoHoanThanh")
     private Double tienDoHoanThanh;
-    @JsonIgnore
-    @JoinTable(name = "QuanLyDuAn", joinColumns = {
-        @JoinColumn(name = "maDuAn", referencedColumnName = "maDuAn")}, inverseJoinColumns = {
-        @JoinColumn(name = "maNguoiDung", referencedColumnName = "maNguoiDung")})
-    @ManyToMany
-    private Collection<NguoiDung> nguoiDungCollection;
-    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "maDuAn")
     private Collection<PhieuKhaoSat> phieuKhaoSatCollection;
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "duAn")
+    private Collection<QuanLyDuAn> quanLyDuAnCollection;
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "maDuAn")
     private Collection<TapTin> tapTinCollection;
@@ -155,21 +148,21 @@ public class DuAn implements Serializable {
     }
 
     @jakarta.xml.bind.annotation.XmlTransient
-    public Collection<NguoiDung> getNguoiDungCollection() {
-        return nguoiDungCollection;
-    }
-
-    public void setNguoiDungCollection(Collection<NguoiDung> nguoiDungCollection) {
-        this.nguoiDungCollection = nguoiDungCollection;
-    }
-
-    @jakarta.xml.bind.annotation.XmlTransient
     public Collection<PhieuKhaoSat> getPhieuKhaoSatCollection() {
         return phieuKhaoSatCollection;
     }
 
     public void setPhieuKhaoSatCollection(Collection<PhieuKhaoSat> phieuKhaoSatCollection) {
         this.phieuKhaoSatCollection = phieuKhaoSatCollection;
+    }
+
+    @jakarta.xml.bind.annotation.XmlTransient
+    public Collection<QuanLyDuAn> getQuanLyDuAnCollection() {
+        return quanLyDuAnCollection;
+    }
+
+    public void setQuanLyDuAnCollection(Collection<QuanLyDuAn> quanLyDuAnCollection) {
+        this.quanLyDuAnCollection = quanLyDuAnCollection;
     }
 
     @jakarta.xml.bind.annotation.XmlTransient
@@ -203,7 +196,7 @@ public class DuAn implements Serializable {
 
     @Override
     public String toString() {
-        return "com.JavaWebProject.JavaWebProject.config.DuAn[ maDuAn=" + maDuAn + " ]";
+        return "com.JavaWebProject.JavaWebProject.controllers.DuAn[ maDuAn=" + maDuAn + " ]";
     }
 
 }
