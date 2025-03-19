@@ -23,9 +23,9 @@ import java.io.Serializable;
 @Table(name = "CauTraLoi")
 @jakarta.xml.bind.annotation.XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "CauTraLoi.findAll", query = "SELECT c FROM CauTraLoi c"),
-    @NamedQuery(name = "CauTraLoi.findByMaCauTraLoi", query = "SELECT c FROM CauTraLoi c WHERE c.maCauTraLoi = :maCauTraLoi"),
-    @NamedQuery(name = "CauTraLoi.findByNoiDung", query = "SELECT c FROM CauTraLoi c WHERE c.noiDung = :noiDung")})
+        @NamedQuery(name = "CauTraLoi.findAll", query = "SELECT c FROM CauTraLoi c"),
+        @NamedQuery(name = "CauTraLoi.findByMaCauTraLoi", query = "SELECT c FROM CauTraLoi c WHERE c.maCauTraLoi = :maCauTraLoi"),
+        @NamedQuery(name = "CauTraLoi.findByNoiDung", query = "SELECT c FROM CauTraLoi c WHERE c.noiDung = :noiDung")})
 public class CauTraLoi implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -115,5 +115,5 @@ public class CauTraLoi implements Serializable {
     public String toString() {
         return "com.JavaWebProject.JavaWebProject.config.CauTraLoi[ maCauTraLoi=" + maCauTraLoi + " ]";
     }
-    
+
 }

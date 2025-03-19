@@ -68,6 +68,7 @@ public class DuAn implements Serializable {
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "tienDoHoanThanh")
     private Double tienDoHoanThanh;
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "maDuAn")
     private Collection<PhieuKhaoSat> phieuKhaoSatCollection;
     @JsonIgnore

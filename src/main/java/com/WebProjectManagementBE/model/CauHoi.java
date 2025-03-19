@@ -17,11 +17,13 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.util.Collection;
+import lombok.Data;
 
 /**
  *
  * @author DUY
  */
+@Data
 @Entity
 @Table(name = "CauHoi")
 @jakarta.xml.bind.annotation.XmlRootElement
@@ -43,11 +45,11 @@ public class CauHoi implements Serializable {
     @Basic(optional = false)
     @jakarta.validation.constraints.NotNull
     @jakarta.validation.constraints.Size(min = 1, max = 2147483647)
-    @Column(name = "cauHoi")
+    @Column(name = "cauHoi") // nội dung câu hỏi
     private String cauHoi;
     @Basic(optional = false)
     @jakarta.validation.constraints.NotNull
-    @Column(name = "batBuoc")
+    @Column(name = "batBuoc") // Câu hỏi này có bắt buộc phải trả lời hay không
     private boolean batBuoc;
     @jakarta.validation.constraints.Size(max = 2147483647)
     @Column(name = "moTa")
@@ -57,9 +59,8 @@ public class CauHoi implements Serializable {
     @JoinColumn(name = "maLoai", referencedColumnName = "maLoai")
     @ManyToOne(optional = false)
     private LoaiCauHoi maLoai;
-    @JoinColumn(name = "maPhieuKhaoSat", referencedColumnName = "maPhieuKhaoSat")
-    @ManyToOne(optional = false)
-    private PhieuKhaoSat maPhieuKhaoSat;
+    @Column(name = "ma_phieu_khao_sat", nullable = false)
+    private String maPhieuKhaoSat;
 
     public CauHoi() {
     }
@@ -123,11 +124,11 @@ public class CauHoi implements Serializable {
         this.maLoai = maLoai;
     }
 
-    public PhieuKhaoSat getMaPhieuKhaoSat() {
+    public String getMaPhieuKhaoSat() {
         return maPhieuKhaoSat;
     }
 
-    public void setMaPhieuKhaoSat(PhieuKhaoSat maPhieuKhaoSat) {
+    public void setMaPhieuKhaoSat(String maPhieuKhaoSat) {
         this.maPhieuKhaoSat = maPhieuKhaoSat;
     }
 

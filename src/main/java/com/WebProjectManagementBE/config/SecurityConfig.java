@@ -1,4 +1,6 @@
 package com.WebProjectManagementBE.config;
+import com.WebProjectManagementBE.customSecurity.CustomAuthenticationEntryPoint;
+import com.WebProjectManagementBE.customSecurity.CustomAuthenticationFailureHandler;
 import com.WebProjectManagementBE.filter.JWTFilter;
 import com.WebProjectManagementBE.service.JWTService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +57,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:3000"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);
 

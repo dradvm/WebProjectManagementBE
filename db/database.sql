@@ -104,4 +104,7 @@ update NguoiDung set maQuyen = 'Q2' where maNguoiDung = 'ND000000002'
 ALTER TABLE [QuanLyDuAn].[dbo].[PhieuKhaoSat] 
 ADD lienKetTraLoi VARCHAR(255);
 
+ALTER TABLE [QuanLyDuAn].[dbo].[QuanLyDuAn]
+ADD chuDuAn BIT;
+
 select * from quyen
