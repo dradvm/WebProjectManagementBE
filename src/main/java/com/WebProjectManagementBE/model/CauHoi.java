@@ -59,7 +59,7 @@ public class CauHoi implements Serializable {
     @JoinColumn(name = "maLoai", referencedColumnName = "maLoai")
     @ManyToOne(optional = false)
     private LoaiCauHoi maLoai;
-    @Column(name = "ma_phieu_khao_sat", nullable = false)
+    @Column(name = "maPhieuKhaoSat", nullable = false)
     private String maPhieuKhaoSat;
 
     public CauHoi() {
