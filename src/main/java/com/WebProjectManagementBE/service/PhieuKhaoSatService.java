@@ -63,7 +63,7 @@ public class PhieuKhaoSatService {
             "Phiếu khảo sát cho dự án: " + phieuKhaoSat.getMaDuAn().getTenDuAn()
         );
         // Cập nhật thông tin form
-        phieuKhaoSat.setLienKet("https://docs.google.com/forms/d/" + formId);
+        phieuKhaoSat.setLienKet("https://docs.google.com/forms/d/" + formId + "/viewform");
         phieuKhaoSat.setLienKetTraLoi("https://docs.google.com/forms/d/" + formId + "/edit#responses");
         
         // Lưu vào database
@@ -79,18 +79,6 @@ public class PhieuKhaoSatService {
         existingPhieuKhaoSat.setTenPhieuKhaoSat(phieuKhaoSat.getTenPhieuKhaoSat());
         existingPhieuKhaoSat.setNgayGioMo(phieuKhaoSat.getNgayGioMo());
         existingPhieuKhaoSat.setNgayGioDong(phieuKhaoSat.getNgayGioDong());
-        
-        // Cập nhật form trong Google Forms
-        try {
-            googleFormsService.updateForm(
-                maPhieuKhaoSat,
-                existingPhieuKhaoSat.getTenPhieuKhaoSat(),
-                "Phiếu khảo sát cho dự án: " + existingPhieuKhaoSat.getMaDuAn().getTenDuAn()
-            );
-        } catch (UnsupportedOperationException e) {
-            // Log thông báo và tiếp tục cập nhật trong database
-            System.out.println("Không thể cập nhật form tự động. Vui lòng cập nhật thủ công: " + existingPhieuKhaoSat.getLienKet());
-        }
         
         return phieuKhaoSatRepository.save(existingPhieuKhaoSat);
     }

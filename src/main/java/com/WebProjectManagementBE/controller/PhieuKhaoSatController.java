@@ -40,7 +40,7 @@ public class PhieuKhaoSatController {
         return ResponseEntity.ok(phieuKhaoSatService.createPhieuKhaoSat(phieuKhaoSat));
     }
 
-    @PutMapping("/{maPhieuKhaoSat}")
+    @PatchMapping("/{maPhieuKhaoSat}")
     public ResponseEntity<PhieuKhaoSat> updatePhieuKhaoSat(
             @PathVariable String maPhieuKhaoSat,
             @RequestBody PhieuKhaoSat phieuKhaoSatDetails) throws IOException {
