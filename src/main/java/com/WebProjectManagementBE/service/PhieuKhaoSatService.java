@@ -70,16 +70,30 @@ public class PhieuKhaoSatService {
         return phieuKhaoSatRepository.save(phieuKhaoSat);
     }
 
-    // Cập nhật phiếu khảo sát
+    // Lấy formId từ lienKet
+    private String extractFormIdFromLink(String lienKet) {
+        if (lienKet == null || !lienKet.contains("/d/")) {
+            throw new IllegalArgumentException("Liên kết không hợp lệ");
+        }
+        return lienKet.split("/d/")[1].split("/")[0];
+    }
+
+    // Cập nhật phiếu khẻo sát
     @Transactional
     public PhieuKhaoSat updatePhieuKhaoSat(String maPhieuKhaoSat, PhieuKhaoSat phieuKhaoSat) throws IOException {
         PhieuKhaoSat existingPhieuKhaoSat = getPhieuKhaoSatById(maPhieuKhaoSat);
-        
+
         // Cập nhật thông tin cơ bản
         existingPhieuKhaoSat.setTenPhieuKhaoSat(phieuKhaoSat.getTenPhieuKhaoSat());
         existingPhieuKhaoSat.setNgayGioMo(phieuKhaoSat.getNgayGioMo());
         existingPhieuKhaoSat.setNgayGioDong(phieuKhaoSat.getNgayGioDong());
-        
+
+        // Lấy formId từ lienKet và cập nhật form Google Forms
+        if (existingPhieuKhaoSat.getLienKet() != null) {
+            String formId = extractFormIdFromLink(existingPhieuKhaoSat.getLienKet());
+            googleFormsService.updateForm(formId, phieuKhaoSat.getTenPhieuKhaoSat(), "");
+        }
+
         return phieuKhaoSatRepository.save(existingPhieuKhaoSat);
     }
 
