@@ -100,7 +100,7 @@ public class NguoiDungController {
     }
 
     //Chuyển đổi trạng thái tài khoản (Vô hiệu hóa/Kích hoạt)
-    @PostMapping("/{maNguoiDung}/{isActive}")
+    @PatchMapping("/{maNguoiDung}/active/{isActive}")
     public ResponseEntity<?> toggleAccountStatus(
             @PathVariable String maNguoiDung,
             @PathVariable boolean isActive
