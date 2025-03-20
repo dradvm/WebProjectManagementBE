@@ -41,18 +41,7 @@ public class NguoiDungController {
 
     //Thêm tài khoản
     @PostMapping
-    public ResponseEntity<?> registerNguoiDung(@RequestBody NguoiDungRegisterDTO nguoiDungRegisterDTO) {
-        Map<String, String> response = new HashMap<>();
-        List<Map<String, String>> errors = new ArrayList<Map<String, String>>();
-
-        NguoiDungValidator validator = new SoDienThoaiNguoiDungValidator(nguoiDungService);
-        validator.setNext(new EmailNguoiDungValidator(nguoiDungService));
-        validator.validate(nguoiDungRegisterDTO, errors);
-        if (!errors.isEmpty()) {
-            return ResponseEntity.internalServerError().body(errors);
-        }
-
-        NguoiDung nguoiDung = nguoiDungFactory.createNguoiDung(nguoiDungRegisterDTO);
+    public ResponseEntity<?> registerNguoiDung(@RequestBody NguoiDung nguoiDung) {
         nguoiDungService.registerNguoiDung(nguoiDung);
         return ResponseEntity.ok("Tài khoản được thêm thành công!");
     }
