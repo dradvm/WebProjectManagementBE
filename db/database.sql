@@ -107,4 +107,7 @@ ADD lienKetTraLoi VARCHAR(255);
 ALTER TABLE [QuanLyDuAn].[dbo].[QuanLyDuAn]
 ADD chuDuAn BIT;
 
+ALTER TABLE NguoiDung ADD CONSTRAINT active_df DEFAULT 1 FOR active;
+
+
 select * from quyen

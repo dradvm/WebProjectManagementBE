@@ -70,7 +70,7 @@ public class NguoiDung implements Serializable {
     @Column(name = "matKhau")
     private String matKhau;
     @Column(name = "active")
-    private Boolean active;
+    private Boolean active = true;
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "nguoiDung")
     private Collection<QuanLyDuAn> quanLyDuAnCollection;
