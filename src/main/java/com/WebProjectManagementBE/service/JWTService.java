@@ -1,9 +1,11 @@
 package com.WebProjectManagementBE.service;
 
+import com.WebProjectManagementBE.model.NguoiDung;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,10 +22,18 @@ import java.util.stream.Collectors;
 
 @Service
 public class JWTService {
+
+    @Autowired
+    NguoiDungService nguoiDungService;
+
     private final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
     public String generateToken(String username) {
+        NguoiDung nd = nguoiDungService.findByMaNguoiDung(username);
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("quyen", nd.getMaQuyen().getMaQuyen());
         return Jwts.builder()
+                .setClaims(claims)
                 .setSubject(username)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // Hết hạn sau 1 giờ

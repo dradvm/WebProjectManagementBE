@@ -3,17 +3,16 @@ package com.WebProjectManagementBE.controller;
 import com.WebProjectManagementBE.DTO.DuAnDTO;
 import com.WebProjectManagementBE.model.DuAn;
 import com.WebProjectManagementBE.model.NguoiDung;
+import com.WebProjectManagementBE.model.PhieuKhaoSat;
 import com.WebProjectManagementBE.model.QuanLyDuAn;
-import com.WebProjectManagementBE.service.DuAnService;
-import com.WebProjectManagementBE.service.FirebaseService;
-import com.WebProjectManagementBE.service.NguoiDungService;
-import com.WebProjectManagementBE.service.QuanLyDuAnService;
+import com.WebProjectManagementBE.service.*;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +34,8 @@ public class DuAnController {
     @Autowired
     QuanLyDuAnService quanLyDuAnService;
 
+    @Autowired
+    PhieuKhaoSatService phieuKhaoSatService;
 
     @PostMapping("")
     public ResponseEntity<?> createDuAn(@RequestBody DuAnDTO duAnDTO) {
@@ -73,9 +74,14 @@ public class DuAnController {
     }
 
     @DeleteMapping("/{maDuAn}")
-    public ResponseEntity<?> deleteDuAn(@PathVariable String maDuAn) {
+    public ResponseEntity<?> deleteDuAn(@PathVariable String maDuAn) throws IOException {
         if (duAnService.isDuAnOwnedByUser(maDuAn)) {
             duAnService.deleteDuAn(maDuAn);
+            List<PhieuKhaoSat> phieuKhaoSatList = phieuKhaoSatService.getPhieuKhaoSatByMaDuAn(maDuAn);
+            for (PhieuKhaoSat pks : phieuKhaoSatList) {
+                phieuKhaoSatService.deletePhieuKhaoSat(pks.getMaPhieuKhaoSat());
+            }
+
             return ResponseEntity.ok("Xoá dự án");
         }
         else {

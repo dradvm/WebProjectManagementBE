@@ -75,7 +75,8 @@ public class NguoiDungService {
         return nguoiDungRepository.findByMaNguoiDung(maNguoiDung);
     }
 
-    public List<NguoiDung> findAllAccounts() { return nguoiDungRepository.findAll();}
+    public List<NguoiDung> findAllAccounts() { return nguoiDungRepository.findAll().stream()
+            .filter(nguoiDung -> (nguoiDung.getMaQuyen().getMaQuyen().equals("Q1"))).toList();}
 
     public void updateNguoiDung(NguoiDung nguoiDung) { nguoiDungRepository.save(nguoiDung);}
 
@@ -93,9 +94,8 @@ public class NguoiDungService {
         Set<String> nguoiDungInDuAnIds = quanLyDuAns.stream()
                 .map(ql -> ql.getNguoiDung().getMaNguoiDung())
                 .collect(Collectors.toSet());
-
         return nguoiDungRepository.findAll().stream()
-                .filter(nguoiDung -> !nguoiDungInDuAnIds.contains(nguoiDung.getMaNguoiDung()))
+                .filter(nguoiDung -> (!nguoiDungInDuAnIds.contains(nguoiDung.getMaNguoiDung()) && nguoiDung.getMaQuyen().getMaQuyen().equals("Q1")))
                 .collect(Collectors.toList());
 
 

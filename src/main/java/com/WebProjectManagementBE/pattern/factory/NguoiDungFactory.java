@@ -21,6 +21,7 @@ public class NguoiDungFactory {
     @Autowired
     private PasswordService passwordService;
 
+
     public NguoiDung createNguoiDung(NguoiDungRegisterDTO dto) {
         NguoiDung nguoiDung = new NguoiDung();
         Quyen quyen = quyenService.getQuyenNguoiDung();
